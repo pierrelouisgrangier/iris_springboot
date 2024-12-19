@@ -1,33 +1,73 @@
 package fr.iris.services;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.iris.dto.ComputerDto;
+import fr.iris.model.ComputerModel;
+import fr.iris.repository.ComputerRepository;
 
 @Service
 public class ComputerService {
-	private final Map<Long, ComputerDto> COMPUTERS = new HashMap<Long, ComputerDto>();
-	private Long index = 0l;
-	
-	public String getHelloWorld() {
-		return "NB Computers : " + COMPUTERS.size();
+
+	@Autowired
+	private ComputerRepository computerRepository;
+
+	public String count() {
+		return "NB Computers : " + computerRepository.count();
 	}
-	
+
+	public List<ComputerDto> getAll() {
+		return computerRepository.findAll()
+				.stream()
+				.map(computer -> toDto(computer))
+				.toList();
+	}
+
 	public ComputerDto createComputer(ComputerDto computerDto) {
-		computerDto.setId(index);
-		index++;
-		return COMPUTERS.put(computerDto.getId(), computerDto);
+		ComputerModel model = toModel(computerDto);
+		ComputerModel outModel =  computerRepository.save(model);
+		return toDto(outModel);
 	}
-	
+
 	public ComputerDto updateComputer(ComputerDto computerDto, long id) {
-		computerDto.setId(id);
-		return COMPUTERS.put(id, computerDto);
+		ComputerModel model = toModel(computerDto);
+		ComputerModel outModel =  computerRepository.save(model);
+		return toDto(outModel);
 	}
+
+	public boolean deleteComputer(long id) {
+		try {
+			computerRepository.deleteById(id);
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+	}
+
+	private ComputerModel toModel(ComputerDto dto) {
+		ComputerModel model = new ComputerModel();
+		model.setBrand(dto.getBrand());
+		model.setId(dto.getId());
+		model.setName(dto.getName());
+		model.setSerialNumber(dto.getSerialNumber());
+		return model;
+	}
+
 	
-	public ComputerDto deleteComputer( long id) {
-		return COMPUTERS.remove(id);
-	}
+
+	private ComputerDto toDto(ComputerModel model) {
+		ComputerDto dto = new ComputerDto();
+		dto.setBrand(model.getBrand());
+		dto.setId(model.getId());
+		dto.setName(model.getName());
+		dto.setSerialNumber(model.getSerialNumber());
+		
+		return dto;
+	}	
+	
+	
+	
 }

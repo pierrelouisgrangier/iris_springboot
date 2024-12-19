@@ -1,5 +1,7 @@
 package fr.iris.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +24,14 @@ public class DemoController {
 
 	
 	@GetMapping()
-	public String getHelloWorld() {
-		return computerService.getHelloWorld();
+	public String count() {
+		return computerService.count();
+	}
+	
+
+	@GetMapping("all")
+	public List<ComputerDto> getAll() {
+		return computerService.getAll();
 	}
 	
 	@PostMapping()
@@ -37,8 +45,8 @@ public class DemoController {
 	}
 	
 	@DeleteMapping("{id}") 
-	public ComputerDto deleteComputer( @PathVariable("id") long id) {
-		return computerService.deleteComputer(id);
+	public void deleteComputer( @PathVariable("id") long id) {
+		computerService.deleteComputer(id);
 	}
 	
 	
